@@ -1,33 +1,3 @@
-/*
- * package com.hitesh.placementmanagement;
- * 
- * import java.util.List;
- * 
- * import org.springframework.beans.factory.annotation.Autowired; import
- * org.springframework.stereotype.Service;
- * 
- * import com.hitesh.placementmanagement.HiteshStudent; import
- * com.hitesh.placementmanagement.HiteshIStudentRepository;
- * 
- * @Service public abstract class HiteshStudentService implements
- * HiteshIStudentService {
- * 
- * @Autowired HiteshIStudentRepository repo;
- * 
- * @Override public List<HiteshStudent> getAllStudents() { return
- * repo.findAll(); }
- * 
- * @Override public void addStudent(HiteshStudent s) { repo.save(s); }
- * 
- * @Override public HiteshStudent getStudentById(Long id) { return
- * repo.findById(id).get(); }
- * 
- * @Override public void updateStudent(Long id, HiteshStudent s) { if
- * (repo.findById(id).isPresent()) { repo.save(s); } else {
- * System.out.println("Record not found"); } }
- * 
- * @Override public void deleteStudent(Long id) { repo.deleteById(id); } }
- */
 package com.hitesh.placementmanagement;
 
 import java.util.List;
@@ -37,6 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
+
+/**
+ * Service class implementing student management operations.
+ */
 @Transactional
 @Service
 public class HiteshStudentService implements HiteshIStudentService {
@@ -44,51 +18,90 @@ public class HiteshStudentService implements HiteshIStudentService {
     @Autowired
     HiteshIStudentRepository repo;
 
+    /**
+     * Retrieves all students from the repository.
+     *
+     * @return list of all students
+     */
     @Override
     public List<HiteshStudent> getAllStudents() {
         return repo.findAll();
     }
 
+    /**
+     * Adds a new student to the repository.
+     *
+     * @param student the student object to be added
+     */
     @Override
-    public void addStudent(HiteshStudent s) {
-        repo.save(s);
+    public void addStudent(HiteshStudent student) {
+        repo.save(student);
     }
 
+    /**
+     * Retrieves a student by their unique ID.
+     *
+     * @param id the student ID
+     * @return the student object if found, otherwise null
+     */
     @Override
     public HiteshStudent getStudentById(Long id) {
         Optional<HiteshStudent> student = repo.findById(id);
-        return student.orElse(null); // Returns null if not found, handle this in the controller
+        return student.orElse(null); // Returns null if student is not found
     }
 
+    /**
+     * Updates the student details for the given student ID.
+     *
+     * @param id the ID of the student to update
+     * @param student the updated student object
+     */
     @Override
-    public void updateStudent(Long id, HiteshStudent s) {
-        if (repo.findById(id).isPresent()) {
-            s.setId(id); // Ensures the ID remains the same
-            repo.save(s);
+    public void updateStudent(Long id, HiteshStudent student) {
+        Optional<HiteshStudent> existingStudent = repo.findById(id);
+        if (existingStudent.isPresent()) {
+            student.setId(id); // Ensures the ID remains the same
+            repo.save(student);
         } else {
-            System.out.println("Record not found");
+            System.out.println("Student record not found for ID: " + id);
         }
     }
 
+    /**
+     * Deletes the student with the given ID.
+     *
+     * @param id the student ID
+     */
     @Override
     public void deleteStudent(Long id) {
         if (repo.findById(id).isPresent()) {
             repo.deleteById(id);
         } else {
-            System.out.println("Record not found");
+            System.out.println("Student record not found for ID: " + id);
         }
     }
 
-	@Override
-	public HiteshStudent searchStudentById(long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    /**
+     * Searches for a student by their unique ID.
+     *
+     * @param id the student ID
+     * @return the student object if found, otherwise null
+     */
+    @Override
+    public HiteshStudent searchStudentById(long id) {
+        Optional<HiteshStudent> student = repo.findById(id);
+        return student.orElse(null); // Handle null in the controller if needed
+    }
 
-	@Override
-	public void searchStudentByHallTicket(long hallTicketNo) {
-		// TODO Auto-generated method stub
-		
-	}
-	
+    /**
+     * Searches for a student by their hall ticket number.
+     *
+     * @param hallTicketNo the hall ticket number
+     * @return the student with the given hall ticket number, if found
+     */
+    @Override
+    public HiteshStudent searchStudentByHallTicket(long hallTicketNo) {
+        Optional<HiteshStudent> student = repo.findByHallTicketNo(hallTicketNo);
+        return student.orElse(null); // Assuming `findByHallTicketNo` exists in the repository
+    }
 }

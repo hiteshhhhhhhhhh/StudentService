@@ -1,39 +1,62 @@
-//package com.hitesh.placementmanagement;
-//
-//import java.util.List;
-//
-//public interface HiteshIStudentService {
-//	List<HiteshStudent> getAllStudents();
-//
-//	void addStudent(HiteshStudent s);
-//
-//	HiteshStudent getStudentById(Long id);
-//	void searchStudentById(long id);
-//	void searchStudentByHallTicket(long ticketNo);
-//	void deleteStudent(Long id);
-//	
-//
-//	void updateStudent(Long id, HiteshStudent s);
-//
-//}
 package com.hitesh.placementmanagement;
 
 import java.util.List;
 
+/**
+ * Interface for managing student operations in the placement management system.
+ */
 public interface HiteshIStudentService {
 
+    /**
+     * Retrieves all students from the system.
+     *
+     * @return a list of all students
+     */
     List<HiteshStudent> getAllStudents();
 
-    void addStudent(HiteshStudent s);
+    /**
+     * Adds a new student to the system.
+     *
+     * @param student the student object to be added
+     */
+    void addStudent(HiteshStudent student);
 
+    /**
+     * Retrieves a student by their unique ID.
+     *
+     * @param id the unique ID of the student
+     * @return the student with the specified ID, or null if not found
+     */
     HiteshStudent getStudentById(Long id);
 
-    HiteshStudent searchStudentById(long id); // Assuming you return a single student here
+    /**
+     * Searches for a student by their unique ID.
+     *
+     * @param id the unique ID of the student
+     * @return the student with the specified ID, or null if not found
+     */
+    HiteshStudent searchStudentById(long id);
 
-    void searchStudentByHallTicket(long hallTicketNo); // Return a student by hall ticket
+    /**
+     * Searches for a student by their hall ticket number.
+     *
+     * @param hallTicketNo the hall ticket number of the student
+     * @return the student with the specified hall ticket number, or null if not found
+     */
+    HiteshStudent searchStudentByHallTicket(long hallTicketNo);
 
+    /**
+     * Deletes a student by their unique ID.
+     *
+     * @param id the unique ID of the student to be deleted
+     */
     void deleteStudent(Long id);
 
-    void updateStudent(Long id, HiteshStudent s);
-
+    /**
+     * Updates an existing student with new details.
+     *
+     * @param id the unique ID of the student to be updated
+     * @param student the student object containing updated details
+     */
+    void updateStudent(Long id, HiteshStudent student);
 }
