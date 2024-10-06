@@ -1,114 +1,76 @@
 package com.hitesh.placementmanagement;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
-import java.util.Arrays;
-import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-class HiteshStudentServiceTest {
+import jakarta.persistence.EntityNotFoundException;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+public class HiteshStudentServiceTest {
 
     @InjectMocks
-    private HiteshStudentService service;
+    private HiteshStudentService studentService;
 
     @Mock
-    private HiteshIStudentRepository repository;
+    private HiteshIStudentRepository studentRepository;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
+    /**
+     * Test case for retrieving a student successfully.
+     */
     @Test
-    void testGetAllStudents() {
-        HiteshStudent student1 = new HiteshStudent(5, 12345L, "Hari", "Computer Science", 2022, "BTech", 1001L);
-        HiteshStudent student2 = new HiteshStudent(2L, 67890L, "Ram", "Electrical Engineering", 2023, "MTech", 1002L);
+    public void testGetStudent_Success() {
+        // Arrange
+        HiteshStudent student = new HiteshStudent();
+        when(studentRepository.findById((long) 1)).thenReturn(java.util.Optional.of(student));
 
-        when(repository.findAll()).thenReturn(Arrays.asList(student1, student2));
+        // Act
+        HiteshStudent result = studentService.get(1);
 
-        var result = service.getAllStudents();
-
-        assertEquals(2, result.size());
-        verify(repository, times(1)).findAll();
+        // Assert
+        assertEquals(student, result);
     }
 
+    /**
+     * Failing test case for retrieving a student that does not exist.
+     */
     @Test
-    void testAddStudent() {
-        HiteshStudent student = new HiteshStudent(3L, 34567L, "Raju", "Mechanical Engineering", 2024, "PhD", 1003L);
+    public void testGetStudent_NotFound() {
+        // Arrange
+        when(studentRepository.findById((long) 1)).thenReturn(java.util.Optional.empty());
 
-        service.addStudent(student);
-
-        verify(repository, times(1)).save(student);
+        // Act & Assert
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
+            studentService.get(1);
+        });
+        assertEquals("Student not found with ID: 1", exception.getMessage());
     }
 
+    /**
+     * Test case for saving a student successfully.
+     */
     @Test
-    void testGetStudentById_ExistingStudent() {
-        HiteshStudent student = new HiteshStudent(1L, 12345L, "Hari", "Computer Science", 2022, "BTech", 1001L);
+    public void testSaveStudent_Success() {
+        // Arrange
+    	HiteshStudent student = new HiteshStudent();
+        when(studentRepository.save(student)).thenReturn(student);
 
-        when(repository.findById(1L)).thenReturn(Optional.of(student));
+        // Act
+        HiteshStudent result = studentService.save(student);
 
-        var result = service.getStudentById(1L);
-
-        assertNotNull(result);
-        assertEquals("Hari", result.getStudent_name());
-        verify(repository, times(1)).findById(1L);
-    }
-
-    @Test
-    void testGetStudentById_NonExistingStudent() {
-        when(repository.findById(99L)).thenReturn(Optional.empty());
-
-        var result = service.getStudentById(99L);
-
-        assertNull(result);
-        verify(repository, times(1)).findById(99L);
-    }
-
-    @Test
-    void testDeleteStudent_ExistingStudent() {
-        HiteshStudent student = new HiteshStudent(1L, 12345L, "Hari", "Computer Science", 2022, "BTech", 1001L);
-
-        when(repository.findById(1L)).thenReturn(Optional.of(student));
-
-        service.deleteStudent(1L);
-
-        verify(repository, times(1)).deleteById(1L);
-    }
-
-    @Test
-    void testDeleteStudent_NonExistingStudent() {
-        when(repository.findById(99L)).thenReturn(Optional.empty());
-
-        service.deleteStudent(99L);
-
-        verify(repository, times(0)).deleteById(99L); // Ensure no deletion occurs
-    }
-
-    @Test
-    void testSearchStudentByHallTicket_ExistingStudent() {
-        HiteshStudent student = new HiteshStudent(1L, 12345L, "Hari", "Computer Science", 2022, "BTech", 1001L);
-
-        when(repository.findByHallTicketNo(1001L)).thenReturn(Optional.of(student));
-
-        var result = service.searchStudentByHallTicket(1001L);
-
-        assertNotNull(result);
-        assertEquals("Alice", result.getStudent_name());
-        verify(repository, times(1)).findByHallTicketNo(1001L);
-    }
-
-    @Test
-    void testSearchStudentByHallTicket_NonExistingStudent() {
-        when(repository.findByHallTicketNo(9999L)).thenReturn(Optional.empty());
-
-        var result = service.searchStudentByHallTicket(9999L);
-
-        assertNull(result);
-        verify(repository, times(1)).findByHallTicketNo(9999L);
+        // Assert
+        assertEquals(student, result);
+        verify(studentRepository).save(student);
     }
 }

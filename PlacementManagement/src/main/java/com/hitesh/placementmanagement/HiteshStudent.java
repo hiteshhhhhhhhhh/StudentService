@@ -215,4 +215,9 @@ public class HiteshStudent {
                 + ", course=" + course + ", year=" + year + ", qualification=" + qualification + ", hallTicketNo="
                 + hallTicketNo + "]";
     }
+
+	public Object getName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

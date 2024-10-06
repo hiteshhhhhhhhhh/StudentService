@@ -104,4 +104,14 @@ public class HiteshStudentService implements HiteshIStudentService {
         Optional<HiteshStudent> student = repo.findByHallTicketNo(hallTicketNo);
         return student.orElse(null); // Assuming `findByHallTicketNo` exists in the repository
     }
+
+	public HiteshStudent get(int i) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public HiteshStudent save(HiteshStudent student) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
