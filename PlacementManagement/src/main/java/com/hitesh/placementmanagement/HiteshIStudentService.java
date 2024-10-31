@@ -25,23 +25,17 @@ public interface HiteshIStudentService {
      * Retrieves a student by their unique ID.
      *
      * @param id the unique ID of the student
-     * @return the student with the specified ID, or null if not found
+     * @return the student with the specified ID
+     * @throws StudentNotFoundException if no student with the specified ID is found
      */
     HiteshStudent getStudentById(Long id);
-
-    /**
-     * Searches for a student by their unique ID.
-     *
-     * @param id the unique ID of the student
-     * @return the student with the specified ID, or null if not found
-     */
-    HiteshStudent searchStudentById(long id);
 
     /**
      * Searches for a student by their hall ticket number.
      *
      * @param hallTicketNo the hall ticket number of the student
-     * @return the student with the specified hall ticket number, or null if not found
+     * @return the student with the specified hall ticket number
+     * @throws StudentNotFoundException if no student with the specified hall ticket number is found
      */
     HiteshStudent searchStudentByHallTicket(long hallTicketNo);
 
@@ -49,6 +43,7 @@ public interface HiteshIStudentService {
      * Deletes a student by their unique ID.
      *
      * @param id the unique ID of the student to be deleted
+     * @throws StudentNotFoundException if no student with the specified ID is found
      */
     void deleteStudent(Long id);
 
@@ -57,6 +52,9 @@ public interface HiteshIStudentService {
      *
      * @param id the unique ID of the student to be updated
      * @param student the student object containing updated details
+     * @throws StudentNotFoundException if no student with the specified ID is found
      */
     void updateStudent(Long id, HiteshStudent student);
+
+	HiteshStudent searchStudentById(long id);
 }

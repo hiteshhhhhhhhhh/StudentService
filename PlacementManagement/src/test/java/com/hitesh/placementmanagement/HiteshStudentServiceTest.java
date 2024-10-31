@@ -1,76 +1,78 @@
 package com.hitesh.placementmanagement;
 
-
-
+import com.hitesh.placement.exceptions.StudentNotFoundException;
+import com.hitesh.placement.exceptions.StudentServiceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import jakarta.persistence.EntityNotFoundException;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-public class HiteshStudentServiceTest {
+class HiteshStudentServiceTest {
 
     @InjectMocks
-    private HiteshStudentService studentService;
+    private HiteshStudentService service;
 
     @Mock
-    private HiteshIStudentRepository studentRepository;
+    private HiteshIStudentRepository repo;
 
     @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
+    void setUp() {
+        MockitoAnnotations.initMocks(this);
     }
 
-    /**
-     * Test case for retrieving a student successfully.
-     */
     @Test
-    public void testGetStudent_Success() {
-        // Arrange
-        HiteshStudent student = new HiteshStudent();
-        when(studentRepository.findById((long) 1)).thenReturn(java.util.Optional.of(student));
-
-        // Act
-        HiteshStudent result = studentService.get(1);
-
-        // Assert
-        assertEquals(student, result);
+    void getAllStudents_Success() {
+        service.getAllStudents();
+        verify(repo, times(1)).findAll();
     }
 
-    /**
-     * Failing test case for retrieving a student that does not exist.
-     */
     @Test
-    public void testGetStudent_NotFound() {
-        // Arrange
-        when(studentRepository.findById((long) 1)).thenReturn(java.util.Optional.empty());
+    void getStudentById_Success() {
+        HiteshStudent student = new HiteshStudent(1L, null, "Alice", null, 0, null, null);
+        when(repo.findById(1L)).thenReturn(Optional.of(student));
 
-        // Act & Assert
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
-            studentService.get(1);
+        HiteshStudent foundStudent = service.getStudentById(1L);
+        assertEquals("Alice", foundStudent.getName());
+    }
+
+    @Test
+    void getStudentById_NotFound() {
+        when(repo.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(StudentNotFoundException.class, () -> {
+            service.getStudentById(1L);
         });
-        assertEquals("Student not found with ID: 1", exception.getMessage());
     }
 
-    /**
-     * Test case for saving a student successfully.
-     */
     @Test
-    public void testSaveStudent_Success() {
-        // Arrange
-    	HiteshStudent student = new HiteshStudent();
-        when(studentRepository.save(student)).thenReturn(student);
+    void addStudent_Success() {
+        HiteshStudent student = new HiteshStudent(1L, null, "Alice", null, 0, null, null);
+        service.addStudent(student);
+        verify(repo, times(1)).save(student);
+    }
 
-        // Act
-        HiteshStudent result = studentService.save(student);
+    @Test
+    void updateStudent_Success() {
+        HiteshStudent student = new HiteshStudent(1L, null, "Alice", null, 0, null, null);
+        when(repo.findById(1L)).thenReturn(Optional.of(student));
 
-        // Assert
-        assertEquals(student, result);
-        verify(studentRepository).save(student);
+        service.updateStudent(1L, student);
+        verify(repo, times(1)).save(student);
+    }
+
+    @Test
+    void deleteStudent_Success() {
+        HiteshStudent student = new HiteshStudent(1L, null, "Alice", null, 0, null, null);
+        when(repo.findById(1L)).thenReturn(Optional.of(student));
+
+        service.deleteStudent(1L);
+        verify(repo, times(1)).deleteById(1L);
     }
 }

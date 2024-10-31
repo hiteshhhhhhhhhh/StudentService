@@ -1,57 +1,39 @@
 package com.hitesh.placementmanagement;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
-public class HiteshStudentRepositoryTest {
+@ActiveProfiles("test") // Uses the application-test.properties for in-memory DB setup
+class HiteshIStudentRepositoryTest {
 
     @Autowired
-    private HiteshStudentRepositoryTest studentRepository;
+    private HiteshIStudentRepository repo;
 
-    /**
-     * Test case for saving a student successfully.
-     */
     @Test
-    public void testSaveStudent_Success() {
-        // Arrange
-        HiteshStudent student = new HiteshStudent();
-        
-        // Act
-        HiteshStudent savedStudent = studentRepository.save(student);
+    void saveAndRetrieveStudent() {
+        HiteshStudent student = new HiteshStudent(1L, null, "Alice", null, 0, null, null);
+        repo.save(student);
 
-        // Assert
-        assertNotNull(savedStudent.getId());
-        assertEquals(student.getName(), savedStudent.getName());
-        assertEquals(student.getRoll_no(), savedStudent.getRoll_no());
-        //assertEquals(student.getDepartment(), savedStudent.getDepartment());
+        Optional<HiteshStudent> retrieved = repo.findById(1L);
+        assertTrue(retrieved.isPresent());
+        assertEquals("Alice", retrieved.get().getName());
     }
 
-    private HiteshStudent save(HiteshStudent student) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/**
-     * Failing test case for retrieving a non-existent student.
-     */
     @Test
-    public void testFindById_NotFound() {
-        // Act
-        Optional<HiteshStudent> student = studentRepository.findById(99);
+    void deleteStudent() {
+        HiteshStudent student = new HiteshStudent(2L, null, "Bob", null, 0, null, null);
+        repo.save(student);
+        repo.deleteById(2L);
 
-        // Assert
-        assertFalse(student.isPresent());
+        Optional<HiteshStudent> deletedStudent = repo.findById(2L);
+        assertTrue(deletedStudent.isEmpty());
     }
-
-	private Optional<HiteshStudent> findById(int i) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

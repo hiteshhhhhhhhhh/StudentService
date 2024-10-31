@@ -1,6 +1,5 @@
 package com.hitesh.placementmanagement;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,7 +8,6 @@ import com.hitesh.placement.exceptions.StudentServiceException;
 
 import jakarta.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 
 @Transactional
 @Service
@@ -45,41 +43,37 @@ public class HiteshStudentService implements HiteshIStudentService {
         }
     }
 
-	@Override
-	public void addStudent(HiteshStudent student) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void addStudent(HiteshStudent student) {
+        try {
+            repo.save(student);
+        } catch (Exception e) {
+            throw new StudentServiceException("Failed to add student");
+        }
+    }
 
-	@Override
-	public HiteshStudent searchStudentById(long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public HiteshStudent searchStudentById(long id) {
+        return repo.findById(id).orElseThrow(() -> 
+            new StudentNotFoundException("Student with ID " + id + " not found"));
+    }
 
-	@Override
-	public HiteshStudent searchStudentByHallTicket(long hallTicketNo) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public HiteshStudent searchStudentByHallTicket(long hallTicketNo) {
+        return repo.findByHallTicketNo(hallTicketNo).orElseThrow(() -> 
+            new StudentNotFoundException("Student with Hall Ticket No " + hallTicketNo + " not found"));
+    }
 
-	@Override
-	public void updateStudent(Long id, HiteshStudent student) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	
-	public HiteshStudent get(int i) {
-		return null;
-		// TODO Auto-generated method stub
-		
-	}
-
-	public HiteshStudent save(HiteshStudent student) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public void updateStudent(Long id, HiteshStudent updatedStudent) {
+        HiteshStudent existingStudent = getStudentById(id); // This will throw if not found
+        try {
+            updatedStudent.setStudent_name(existingStudent.getStudent_name()); // Retain the same ID
+            repo.save(updatedStudent); // Save the updated student
+        } catch (Exception e) {
+            throw new StudentServiceException("Failed to update student");
+        }
+    }
 
     // Other methods here...
 }
