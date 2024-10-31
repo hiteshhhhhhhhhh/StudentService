@@ -14,9 +14,8 @@ import jakarta.persistence.Table;
 public class HiteshStudent {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    //@GeneratedValue(strategy = GenerationType.AUTO)
     private long student_id;
-
     private long roll_no;
     private String student_name;
     private String course;

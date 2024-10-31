@@ -1,17 +1,21 @@
 package com.hitesh.placementmanagement;
 
-import java.util.List;
+import com.hitesh.placement.exceptions.StudentNotFoundException;
+import com.hitesh.placement.exceptions.StudentServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/hitesh_student")
+@CrossOrigin(origins = "http://localhost:3000") // Allow CORS for this controller
+@RequestMapping("/api/hitesh_student")
 public class HiteshStudentController {
 
     @Autowired
-    private HiteshStudentService service;
+    private HiteshIStudentService service;
 
     /**
      * Fetches all students.
@@ -19,12 +23,12 @@ public class HiteshStudentController {
      * @return a ResponseEntity containing a list of HiteshStudent and HttpStatus OK.
      */
     @GetMapping
-    public ResponseEntity<List<HiteshStudent>> getAllStudents() {
+    public ResponseEntity<?> getAllStudents() {
         try {
             List<HiteshStudent> students = service.getAllStudents();
             return new ResponseEntity<>(students, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (StudentServiceException e) {
+            return new ResponseEntity<>("Failed to retrieve students", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -35,14 +39,14 @@ public class HiteshStudentController {
      * @return a ResponseEntity containing the found student and HttpStatus OK, or HttpStatus NOT_FOUND.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<HiteshStudent> getStudent(@PathVariable Long id) {
+    public ResponseEntity<?> getStudentById(@PathVariable Long id) {
         try {
             HiteshStudent student = service.getStudentById(id);
-            return student != null
-                ? new ResponseEntity<>(student, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(student, HttpStatus.OK);
+        } catch (StudentNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (StudentServiceException e) {
+            return new ResponseEntity<>("Service error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -53,7 +57,7 @@ public class HiteshStudentController {
      * @return a ResponseEntity with a success message and HttpStatus CREATED.
      */
     @PostMapping
-    public ResponseEntity<String> addStudent(@RequestBody HiteshStudent student) {
+    public ResponseEntity<?> addStudent(@RequestBody HiteshStudent student) {
         try {
             service.addStudent(student);
             return new ResponseEntity<>("Student added successfully!", HttpStatus.CREATED);
@@ -70,7 +74,7 @@ public class HiteshStudentController {
      * @return a ResponseEntity with a success message and HttpStatus OK, or HttpStatus NOT_FOUND if student is not found.
      */
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateStudent(@PathVariable Long id, @RequestBody HiteshStudent updatedStudent) {
+    public ResponseEntity<?> updateStudent(@PathVariable Long id, @RequestBody HiteshStudent updatedStudent) {
         try {
             HiteshStudent existingStudent = service.getStudentById(id);
             if (existingStudent != null) {
@@ -79,6 +83,8 @@ public class HiteshStudentController {
             } else {
                 return new ResponseEntity<>("Student not found", HttpStatus.NOT_FOUND);
             }
+        } catch (StudentNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to update student", HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -91,7 +97,7 @@ public class HiteshStudentController {
      * @return a ResponseEntity with a success message and HttpStatus OK, or HttpStatus NOT_FOUND if student is not found.
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteStudent(@PathVariable Long id) {
+    public ResponseEntity<?> deleteStudent(@PathVariable Long id) {
         try {
             HiteshStudent existingStudent = service.getStudentById(id);
             if (existingStudent != null) {
@@ -100,6 +106,8 @@ public class HiteshStudentController {
             } else {
                 return new ResponseEntity<>("Student not found", HttpStatus.NOT_FOUND);
             }
+        } catch (StudentNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to delete student", HttpStatus.INTERNAL_SERVER_ERROR);
         }
